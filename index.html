@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LORD FOX UPDATE – 18K</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+      background: #0a0a0a;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    /* ---------- SPLASH OVERLAY (FULL SCREEN) ---------- */
+    #splash {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #0a0a0a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      cursor: pointer;
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    #splash img {
+      max-width: 85%;
+      max-height: 85%;
+      width: auto;
+      height: auto;
+      display: block;
+      border-radius: 16px;
+      box-shadow: 0 0 60px rgba(240, 180, 41, 0.2);
+      transition: transform 0.3s;
+      user-select: none;
+      pointer-events: none; /* click passes through to splash */
+    }
+    #splash:hover img {
+      transform: scale(1.02);
+    }
+    /* Golden glow overlay for the splash (fake particle effect) */
+    #splash::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background: radial-gradient(circle at center, rgba(240,180,41,0.15) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+    #splash:hover::after {
+      opacity: 1;
+    }
+
+    /* Hidden state – after click */
+    #splash.hidden {
+      opacity: 0;
+      transform: scale(1.1);
+      pointer-events: none;
+    }
+
+    /* ---------- MAIN CONTENT (hidden initially) ---------- */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 3rem;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease 0.3s, transform 0.8s ease 0.3s;
+    }
+    .container.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* HERO (video background + image) inside main content */
+    .hero {
+      position: relative;
+      border-radius: 24px;
+      overflow: hidden;
+      margin-bottom: 2.5rem;
+      background: #1a1a1a;
+      min-height: 380px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .hero-video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+    .hero-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.45);
+      z-index: 1;
+    }
+    .hero-image {
+      position: relative;
+      z-index: 2;
+      max-width: 85%;
+      max-height: 400px;
+      width: auto;
+      height: auto;
+      display: block;
+      border-radius: 16px;
+      box-shadow: 0 0 40px rgba(240, 180, 41, 0.15);
+    }
+
+    /* CELEBRATION */
+    .celebration {
+      text-align: center;
+      margin: 1.5rem 0 2rem;
+    }
+    .celebration h2 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #f0b429, #d4a017);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.2;
+    }
+    .celebration .sub {
+      font-size: 1.4rem;
+      color: #aaa;
+      margin-top: 0.5rem;
+      font-weight: 300;
+    }
+    .celebration .sub span {
+      color: #f0b429;
+      font-weight: 600;
+    }
+
+    /* OWNER CARD */
+    .owner-card {
+      background: #1e1e1e;
+      border-radius: 20px;
+      padding: 1.8rem 2rem;
+      margin: 2rem 0 2.5rem;
+      border-left: 6px solid #f0b429;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+    .owner-card .info {
+      font-size: 1.2rem;
+      font-weight: 400;
+      color: #ccc;
+    }
+    .owner-card .info strong {
+      color: #fff;
+      font-weight: 600;
+    }
+    .owner-card .badge {
+      background: #f0b429;
+      color: #0a0a0a;
+      padding: 0.4rem 1.2rem;
+      border-radius: 40px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* BUTTONS */
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: center;
+      margin: 2rem 0 1rem;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      padding: 1rem 3rem;
+      font-size: 1.4rem;
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 60px;
+      border: none;
+      background: #f0b429;
+      color: #0a0a0a;
+      transition: all 0.2s ease;
+      min-width: 200px;
+      flex: 1 1 auto;
+      box-shadow: 0 4px 15px rgba(240, 180, 41, 0.3);
+    }
+    .btn:hover {
+      background: #d4a017;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(240, 180, 41, 0.5);
+    }
+    .btn-outline {
+      background: transparent;
+      color: #f0b429;
+      border: 2px solid #f0b429;
+      box-shadow: none;
+    }
+    .btn-outline:hover {
+      background: #f0b429;
+      color: #0a0a0a;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(240, 180, 41, 0.3);
+    }
+
+    /* FOOTER */
+    .footer {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #2a2a2a;
+      text-align: center;
+      font-size: 1rem;
+      color: #666;
+    }
+    .footer a {
+      color: #f0b429;
+      text-decoration: none;
+    }
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 600px) {
+      .celebration h2 { font-size: 2rem; }
+      .celebration .sub { font-size: 1rem; }
+      .owner-card .info { font-size: 1rem; }
+      .btn { font-size: 1rem; padding: 0.8rem 1.5rem; min-width: 140px; }
+      .hero { min-height: 240px; }
+      .hero-image { max-width: 92%; max-height: 240px; }
+      #splash img { max-width: 92%; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SPLASH OVERLAY -->
+  <div id="splash">
+    <img src="hero.jpg" alt="LORD FOX UPDATE – 18K" />
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="container" id="mainContent">
+    <!-- HERO SECTION (video background + same image, but now inside content) -->
+    <div class="hero">
+      <video class="hero-video" autoplay muted loop playsinline>
+        <source src="bg.mp4" type="video/mp4">
+        Your browser does not support video.
+      </video>
+      <div class="hero-overlay"></div>
+      <img class="hero-image" src="hero.jpg" alt="LORD FOX UPDATE – 18K" />
+    </div>
+
+    <!-- CELEBRATION -->
+    <div class="celebration">
+      <h2>From 700 subs to 18k subs 😪😪</h2>
+      <div class="sub">This journey was <span>nice</span></div>
+    </div>
+
+    <!-- OWNER CARD -->
+    <div class="owner-card">
+      <div class="info">
+        <strong>OWNER OF @lordfoxupdate</strong> · Verified promoter · Crypto Vendor 🌚 · Real name: <strong>Muhammad Kabir 🧘</strong>
+      </div>
+      <div class="badge">🔥 18K</div>
+    </div>
+
+    <!-- BUTTONS -->
+    <div class="button-row">
+      <a href="https://t.me/lordfoxupdate" target="_blank" class="btn">📲 Join Channel</a>
+      <a href="https://t.me/Thelordtsef" target="_blank" class="btn btn-outline">💬 DM @Thelordtsef</a>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+      &copy; 2026 LORD FOX UPDATE · Built with 🧡 by <a href="#">CAT</a>
+    </div>
+  </div>
+
+  <script>
+    // Wait for DOM to load
+    document.addEventListener('DOMContentLoaded', function() {
+      const splash = document.getElementById('splash');
+      const main = document.getElementById('mainContent');
+
+      // Function to dismiss splash with golden effect
+      function dismissSplash() {
+        // Add a golden flash (particle illusion) by adding a brief class
+        splash.style.boxShadow = 'inset 0 0 100px rgba(240,180,41,0.8)';
+        setTimeout(() => {
+          splash.classList.add('hidden');
+          // After splash fades, show main content
+          setTimeout(() => {
+            main.classList.add('visible');
+            // Remove the flash after transition
+            splash.style.boxShadow = 'none';
+          }, 800); // matches transition duration
+        }, 300); // brief glow before fading
+      }
+
+      // Click or tap on splash
+      splash.addEventListener('click', dismissSplash);
+      // Also support touch events for mobile
+      splash.addEventListener('touchstart', function(e) {
+        e.preventDefault(); // prevent double-firing
+        dismissSplash();
+      });
+    });
+  </script>
+</body>
+</html>
